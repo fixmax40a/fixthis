@@ -11,7 +11,6 @@ public class Input3 {
     private static final int MIN_LENGTH = 1;
 
     public static void main(String[] args) {
-
         Scanner scanner = new Scanner(System.in);
         ArrayList<String> container = new ArrayList<>();
         int countInput;
@@ -38,9 +37,8 @@ public class Input3 {
     }
 
     private static int inputFirstNumber(Scanner scanner) throws WrongInputFormatException {
-
-        System.out.print("Please, enter number: ");
         int countInput;
+        System.out.print("Please, enter number: ");
         try {
             countInput = Integer.parseInt(scanner.next());
         } catch (NumberFormatException e) {
@@ -66,13 +64,12 @@ public class Input3 {
                 }
 
                 Matcher matcherNumber = Pattern.compile("\\d+").matcher(input);
-                Matcher matcherLatinLetter = Pattern.compile("[a-z]+", Pattern.CASE_INSENSITIVE).matcher(input);
-                if (matcherNumber.find()) {
-                    throw new WrongInputFormatException("Allowed only alphabetic characters!!!");
-                } else if (matcherLatinLetter.find()) {
-                    list.add(input);
+                Matcher matcherNonAlphabeticCharacter = Pattern.compile("\\W+").matcher(input);
+
+                if (matcherNumber.find() || matcherNonAlphabeticCharacter.find()) {
+                    throw new WrongInputFormatException("Allowed only Latin alphabetic characters!!!");
                 } else {
-                    throw new WrongInputFormatException("Allowed only Latin characters!!!");
+                    list.add(input);
                 }
             } while (++i < count);
         } catch (WrongInputFormatException e) {
