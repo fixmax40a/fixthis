@@ -7,7 +7,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Input3 {
-
     private static final int MAX_LENGTH = 100;
     private static final int MIN_LENGTH = 3;
 
@@ -15,7 +14,6 @@ public class Input3 {
 
         Scanner scanner = new Scanner(System.in);
         ArrayList<String> container = new ArrayList<>();
-        String input;
         int countInput;
 
         try {
@@ -32,25 +30,7 @@ public class Input3 {
 
             container.add("");
 
-            int increment = 0;
-            do {
-                System.out.print("Please, enter word: ");
-                input = scanner.next();
-
-                if (input.length() < MIN_LENGTH || input.length() > MAX_LENGTH) {
-                    throw new IndexOutOfBoundsException("ввод должен иметь от 1 до 100 символов!!!");
-                }
-
-                Matcher matcherNumber = Pattern.compile("\\d+").matcher(input);
-                Matcher matcherLatinLetter = Pattern.compile("[a-z]+", Pattern.CASE_INSENSITIVE).matcher(input);
-                if (matcherNumber.find()) {
-                    throw new WrongInputFormatException("Только буквенные символы!!!");
-                } else if (matcherLatinLetter.find()) {
-                    container.add(input);
-                } else {
-                    throw new WrongInputFormatException("Only latin letter!!!");
-                }
-            } while (++increment < countInput);
+            inputWords(container, scanner, countInput);
 
             System.out.println("\n===Result: ===");
             foo(container).forEach(System.out::println);
@@ -86,5 +66,38 @@ public class Input3 {
         result.append(s.charAt(s.length() - 1));
 
         return result.toString();
+    }
+
+    private static void inputWords(List<String> list, Scanner scanner, int count) {
+        try {
+            int i = 0;
+            do {
+                System.out.print("Please, enter word : ");
+                String input = scanner.next();
+
+                if (input.length() < MIN_LENGTH || input.length() > MAX_LENGTH) {
+                    throw new WrongInputFormatException("ввод должен иметь от " + MIN_LENGTH + " до " + MAX_LENGTH + " символов!!!");
+                }
+
+                Matcher matcherNumber = Pattern.compile("\\d+").matcher(input);
+                Matcher matcherLatinLetter = Pattern.compile("[a-z]+", Pattern.CASE_INSENSITIVE).matcher(input);
+                if (matcherNumber.find()) {
+                    throw new WrongInputFormatException("Только буквенные символы!!!");
+                } else if (matcherLatinLetter.find()) {
+                    list.add(input);
+                } else {
+                    throw new WrongInputFormatException("Only latin letter!!!");
+                }
+            } while (++i < count);
+        } catch (WrongInputFormatException e) {
+            System.err.println(e.getMessage());
+            System.out.print("Try again ? \nplease enter (y|n) : ");
+            String answer = scanner.next();
+            if (answer.equals("y")) {
+                inputWords(list, scanner, count);
+            } else {
+                System.exit(1);
+            }
+        }
     }
 }
