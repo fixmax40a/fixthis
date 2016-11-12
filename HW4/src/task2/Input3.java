@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 public class Input3 {
     private static final int MAX_LENGTH = 100;
-    private static final int MIN_LENGTH = 3;
+    private static final int MIN_LENGTH = 1;
 
     public static void main(String[] args) {
 
@@ -17,25 +17,15 @@ public class Input3 {
         int countInput;
 
         try {
-            System.out.print("Please, enter number: ");
-            try {
-                countInput = Integer.parseInt(scanner.next());
-            } catch (NumberFormatException e) {
-                throw new WrongInputFormatException("Первое ввденное значение должно быть целым числом!!!");
-            }
-
-            if (countInput < MIN_LENGTH || countInput > MAX_LENGTH) {
-                throw new IndexOutOfBoundsException("Число должно быть в диапазоне от " + MIN_LENGTH + " до " + MAX_LENGTH + "!!!");
-            }
-
+            countInput = inputFirstNumber(scanner);
             container.add("");
 
             inputWords(container, scanner, countInput);
 
-            System.out.println("\n===Result: ===");
-            foo(container).forEach(System.out::println);
+            System.out.println("\n=== Result: ===");
+            doAbbreviation(container).forEach(System.out::println);
 
-        } catch (WrongInputFormatException | IndexOutOfBoundsException e) {
+        } catch (WrongInputFormatException e) {
             System.err.println(e.getMessage());
             System.out.print("Try again ? \nplease enter (y|n) : ");
             String answer = scanner.next();
@@ -47,7 +37,57 @@ public class Input3 {
         }
     }
 
-    private static List<String> foo(List<String> list) {
+    private static int inputFirstNumber(Scanner scanner) throws WrongInputFormatException {
+
+        System.out.print("Please, enter number: ");
+        int countInput;
+        try {
+            countInput = Integer.parseInt(scanner.next());
+        } catch (NumberFormatException e) {
+            throw new WrongInputFormatException("First entered value must be an integer!!!");
+        }
+
+        if (countInput < MIN_LENGTH || countInput > MAX_LENGTH) {
+            throw new WrongInputFormatException("The number should be in the range between  " + MIN_LENGTH + " and " + MAX_LENGTH + "!!!");
+        }
+
+        return countInput;
+    }
+
+    private static void inputWords(List<String> list, Scanner scanner, int count) {
+        try {
+            int i = 0;
+            do {
+                System.out.print("Please, enter word : ");
+                String input = scanner.next();
+
+                if (input.length() < MIN_LENGTH || input.length() > MAX_LENGTH) {
+                    throw new WrongInputFormatException("Word should have  " + MIN_LENGTH + " to " + MAX_LENGTH + " characters!!!");
+                }
+
+                Matcher matcherNumber = Pattern.compile("\\d+").matcher(input);
+                Matcher matcherLatinLetter = Pattern.compile("[a-z]+", Pattern.CASE_INSENSITIVE).matcher(input);
+                if (matcherNumber.find()) {
+                    throw new WrongInputFormatException("Allowed only alphabetic characters!!!");
+                } else if (matcherLatinLetter.find()) {
+                    list.add(input);
+                } else {
+                    throw new WrongInputFormatException("Allowed only Latin characters!!!");
+                }
+            } while (++i < count);
+        } catch (WrongInputFormatException e) {
+            System.err.println(e.getMessage());
+            System.out.print("Try again ? \nplease enter (y|n) : ");
+            String answer = scanner.next();
+            if (answer.equals("y")) {
+                inputWords(list, scanner, count);
+            } else {
+                System.exit(1);
+            }
+        }
+    }
+
+    private static List<String> doAbbreviation(List<String> list) {
         List<String> temp = new ArrayList<>();
         for (String s : list) {
             temp.add(squeezeWord(s));
@@ -66,38 +106,5 @@ public class Input3 {
         result.append(s.charAt(s.length() - 1));
 
         return result.toString();
-    }
-
-    private static void inputWords(List<String> list, Scanner scanner, int count) {
-        try {
-            int i = 0;
-            do {
-                System.out.print("Please, enter word : ");
-                String input = scanner.next();
-
-                if (input.length() < MIN_LENGTH || input.length() > MAX_LENGTH) {
-                    throw new WrongInputFormatException("ввод должен иметь от " + MIN_LENGTH + " до " + MAX_LENGTH + " символов!!!");
-                }
-
-                Matcher matcherNumber = Pattern.compile("\\d+").matcher(input);
-                Matcher matcherLatinLetter = Pattern.compile("[a-z]+", Pattern.CASE_INSENSITIVE).matcher(input);
-                if (matcherNumber.find()) {
-                    throw new WrongInputFormatException("Только буквенные символы!!!");
-                } else if (matcherLatinLetter.find()) {
-                    list.add(input);
-                } else {
-                    throw new WrongInputFormatException("Only latin letter!!!");
-                }
-            } while (++i < count);
-        } catch (WrongInputFormatException e) {
-            System.err.println(e.getMessage());
-            System.out.print("Try again ? \nplease enter (y|n) : ");
-            String answer = scanner.next();
-            if (answer.equals("y")) {
-                inputWords(list, scanner, count);
-            } else {
-                System.exit(1);
-            }
-        }
     }
 }
